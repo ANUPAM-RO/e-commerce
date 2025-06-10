@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  postgres-product-order:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: product_order_user
+      POSTGRES_PASSWORD: product_order_password
+      POSTGRES_DB: product_order_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-product-order-data:/var/lib/postgresql/data
+
+  postgres-customer:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: customer_user
+      POSTGRES_PASSWORD: customer_password
+      POSTGRES_DB: customer_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-customer-data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672" # AMQP protocol port
+      - "15672:15672" # Management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  postgres-product-order-data:
+  postgres-customer-data:
+  rabbitmq-data:
