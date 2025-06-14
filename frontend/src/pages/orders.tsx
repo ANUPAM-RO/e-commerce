@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
+import { FaTrash } from 'react-icons/fa';
 
 interface Product {
   id: string;
@@ -57,7 +58,7 @@ export default function Orders() {
             Authorization: `Bearer ${token}`
           }
         });
-        setOrders(response.data);
+        setOrders(response.data?.reverse());
       } catch (error) {
         console.error('Error fetching orders:', error);
         setError('Failed to load orders. Please try again later.');
@@ -68,6 +69,27 @@ export default function Orders() {
 
     fetchOrders();
   }, [isAuthenticated, router]);
+
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      await axios.delete(`http://localhost:3001/api/orders/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      // Remove the deleted order from the state
+      setOrders(orders.filter(order => order.id !== orderId));
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      setError('Failed to delete order. Please try again later.');
+    }
+  };
 
   if (!isAuthenticated) {
     return null;
@@ -113,13 +135,17 @@ export default function Orders() {
     );
   }
 
+  const reversedOrders = [...orders]?.reverse();
+
+  console.log([...orders?.reverse()]);
+
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Order History</h1>
         
         <div className="space-y-6">
-          {orders.map((order) => (
+          {orders?.map((order) => (
             <div key={order.id} className="bg-white shadow-lg rounded-lg overflow-hidden">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
@@ -129,19 +155,28 @@ export default function Orders() {
                       Placed on {new Date(order.createdAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                    order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                    order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                  </span>
+                  <div className="flex items-center space-x-3">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                      order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteOrder(order.id)}
+                      className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                      title="Delete Order"
+                    >
+                      <FaTrash className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="border-t border-gray-200 pt-4">
                   <div className="space-y-4">
-                    {order.orderItems.map((item) => (
+                    {order?.orderItems?.map((item) => (
                       <div key={item.id} className="flex items-center space-x-4">
                         <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-md overflow-hidden">
                           {item.product.image && (

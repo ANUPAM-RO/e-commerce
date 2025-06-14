@@ -475,8 +475,10 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$ind
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/axios/lib/axios.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/link.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react-icons/fa/index.mjs [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
+;
 ;
 ;
 ;
@@ -516,7 +518,7 @@ function Register() {
                         children: "Create your account"
                     }, void 0, false, {
                         fileName: "[project]/src/pages/register.tsx",
-                        lineNumber: 35,
+                        lineNumber: 36,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -526,23 +528,32 @@ function Register() {
                             ' ',
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                 href: "/login",
-                                className: "font-medium text-indigo-600 hover:text-indigo-500",
-                                children: "sign in to your account"
-                            }, void 0, false, {
+                                className: "font-medium text-indigo-600 hover:text-indigo-500 inline-flex items-center",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["FaSignInAlt"], {
+                                        className: "mr-1"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/pages/register.tsx",
+                                        lineNumber: 42,
+                                        columnNumber: 13
+                                    }, this),
+                                    "sign in to your account"
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/src/pages/register.tsx",
-                                lineNumber: 40,
+                                lineNumber: 41,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/pages/register.tsx",
-                        lineNumber: 38,
+                        lineNumber: 39,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/pages/register.tsx",
-                lineNumber: 34,
+                lineNumber: 35,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -564,22 +575,22 @@ function Register() {
                                             children: error
                                         }, void 0, false, {
                                             fileName: "[project]/src/pages/register.tsx",
-                                            lineNumber: 53,
+                                            lineNumber: 55,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/pages/register.tsx",
-                                        lineNumber: 52,
+                                        lineNumber: 54,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/pages/register.tsx",
-                                    lineNumber: 51,
+                                    lineNumber: 53,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/register.tsx",
-                                lineNumber: 50,
+                                lineNumber: 52,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -587,36 +598,52 @@ function Register() {
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
                                         htmlFor: "name",
                                         className: "block text-sm font-medium text-gray-700",
-                                        children: "Full name"
+                                        children: "Full Name"
                                     }, void 0, false, {
                                         fileName: "[project]/src/pages/register.tsx",
-                                        lineNumber: 60,
+                                        lineNumber: 62,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "mt-1",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                            id: "name",
-                                            name: "name",
-                                            type: "text",
-                                            required: true,
-                                            value: formData.name,
-                                            onChange: handleChange,
-                                            className: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/pages/register.tsx",
-                                            lineNumber: 64,
-                                            columnNumber: 17
-                                        }, this)
-                                    }, void 0, false, {
+                                        className: "mt-1 relative rounded-md shadow-sm",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["FaUser"], {
+                                                    className: "h-5 w-5 text-gray-400"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/pages/register.tsx",
+                                                    lineNumber: 67,
+                                                    columnNumber: 19
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/pages/register.tsx",
+                                                lineNumber: 66,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                id: "name",
+                                                name: "name",
+                                                type: "text",
+                                                required: true,
+                                                value: formData.name,
+                                                onChange: handleChange,
+                                                className: "appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/pages/register.tsx",
+                                                lineNumber: 69,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/src/pages/register.tsx",
-                                        lineNumber: 63,
+                                        lineNumber: 65,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/pages/register.tsx",
-                                lineNumber: 59,
+                                lineNumber: 61,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -627,34 +654,50 @@ function Register() {
                                         children: "Email address"
                                     }, void 0, false, {
                                         fileName: "[project]/src/pages/register.tsx",
-                                        lineNumber: 77,
+                                        lineNumber: 82,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "mt-1",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                            id: "email",
-                                            name: "email",
-                                            type: "email",
-                                            autoComplete: "email",
-                                            required: true,
-                                            value: formData.email,
-                                            onChange: handleChange,
-                                            className: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/pages/register.tsx",
-                                            lineNumber: 81,
-                                            columnNumber: 17
-                                        }, this)
-                                    }, void 0, false, {
+                                        className: "mt-1 relative rounded-md shadow-sm",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["FaEnvelope"], {
+                                                    className: "h-5 w-5 text-gray-400"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/pages/register.tsx",
+                                                    lineNumber: 87,
+                                                    columnNumber: 19
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/pages/register.tsx",
+                                                lineNumber: 86,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                id: "email",
+                                                name: "email",
+                                                type: "email",
+                                                autoComplete: "email",
+                                                required: true,
+                                                value: formData.email,
+                                                onChange: handleChange,
+                                                className: "appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/pages/register.tsx",
+                                                lineNumber: 89,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/src/pages/register.tsx",
-                                        lineNumber: 80,
+                                        lineNumber: 85,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/pages/register.tsx",
-                                lineNumber: 76,
+                                lineNumber: 81,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -665,71 +708,96 @@ function Register() {
                                         children: "Password"
                                     }, void 0, false, {
                                         fileName: "[project]/src/pages/register.tsx",
-                                        lineNumber: 95,
+                                        lineNumber: 103,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "mt-1",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                            id: "password",
-                                            name: "password",
-                                            type: "password",
-                                            autoComplete: "new-password",
-                                            required: true,
-                                            value: formData.password,
-                                            onChange: handleChange,
-                                            className: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/pages/register.tsx",
-                                            lineNumber: 99,
-                                            columnNumber: 17
-                                        }, this)
-                                    }, void 0, false, {
+                                        className: "mt-1 relative rounded-md shadow-sm",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["FaLock"], {
+                                                    className: "h-5 w-5 text-gray-400"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/pages/register.tsx",
+                                                    lineNumber: 108,
+                                                    columnNumber: 19
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/pages/register.tsx",
+                                                lineNumber: 107,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                id: "password",
+                                                name: "password",
+                                                type: "password",
+                                                autoComplete: "new-password",
+                                                required: true,
+                                                value: formData.password,
+                                                onChange: handleChange,
+                                                className: "appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/pages/register.tsx",
+                                                lineNumber: 110,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/src/pages/register.tsx",
-                                        lineNumber: 98,
+                                        lineNumber: 106,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/pages/register.tsx",
-                                lineNumber: 94,
+                                lineNumber: 102,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     type: "submit",
-                                    className: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
-                                    children: "Create account"
-                                }, void 0, false, {
+                                    className: "w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["FaUserPlus"], {
+                                            className: "mr-2"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/pages/register.tsx",
+                                            lineNumber: 128,
+                                            columnNumber: 17
+                                        }, this),
+                                        "Create account"
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/src/pages/register.tsx",
-                                    lineNumber: 113,
+                                    lineNumber: 124,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/register.tsx",
-                                lineNumber: 112,
+                                lineNumber: 123,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/pages/register.tsx",
-                        lineNumber: 48,
+                        lineNumber: 50,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/pages/register.tsx",
-                    lineNumber: 47,
+                    lineNumber: 49,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/pages/register.tsx",
-                lineNumber: 46,
+                lineNumber: 48,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/pages/register.tsx",
-        lineNumber: 33,
+        lineNumber: 34,
         columnNumber: 5
     }, this);
 }

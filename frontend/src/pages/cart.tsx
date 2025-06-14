@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
 import Link from 'next/link';
+import { FaTrash, FaShoppingBag, FaArrowLeft } from 'react-icons/fa';
 
 interface CartItem {
   id: string;
@@ -154,9 +155,10 @@ export default function Cart() {
                           </div>
                           <button
                             onClick={() => handleRemoveItem(item.id)}
-                            className="text-red-600 hover:text-red-900"
+                            className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                            title="Remove item"
                           >
-                            Remove
+                            <FaTrash className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
@@ -191,6 +193,7 @@ export default function Cart() {
             <div className="mt-6 flex justify-between">
               <Link href="/">
                 <button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                  <FaArrowLeft className="mr-2" />
                   Continue Shopping
                 </button>
               </Link>
@@ -208,7 +211,10 @@ export default function Cart() {
                     Processing...
                   </>
                 ) : (
-                  'Proceed to Checkout'
+                  <>
+                    <FaShoppingBag className="mr-2" />
+                    Proceed to Checkout
+                  </>
                 )}
               </button>
             </div>
