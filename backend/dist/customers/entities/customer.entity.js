@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Customer = void 0;
 const typeorm_1 = require("typeorm");
+const order_entity_1 = require("../../orders/entities/order.entity");
+const user_entity_1 = require("../../users/entities/user.entity");
 let Customer = class Customer {
 };
 exports.Customer = Customer;
@@ -19,15 +21,16 @@ __decorate([
     __metadata("design:type", String)
 ], Customer.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ name: 'user_id', type: 'uuid' }),
     __metadata("design:type", String)
-], Customer.prototype, "firstName", void 0);
+], Customer.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
+    __metadata("design:type", user_entity_1.User)
+], Customer.prototype, "user", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Customer.prototype, "lastName", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
 ], Customer.prototype, "email", void 0);
 __decorate([
@@ -35,9 +38,29 @@ __decorate([
     __metadata("design:type", String)
 ], Customer.prototype, "phone", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Customer.prototype, "address", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Customer.prototype, "city", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Customer.prototype, "state", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Customer.prototype, "zipCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Customer.prototype, "country", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => order_entity_1.Order, order => order.customerId),
+    __metadata("design:type", Array)
+], Customer.prototype, "orders", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

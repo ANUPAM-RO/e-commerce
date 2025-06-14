@@ -83,7 +83,7 @@ function Cart() {
             // Clear cart after successful order creation
             clearCart();
             // Redirect to order confirmation page
-            router.push(`/orders`);
+            router.push(`/checkout`);
         } catch (err) {
             console.error('Error creating order:', err);
             if (err.response?.data?.message) {

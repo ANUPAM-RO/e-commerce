@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface CartItem {
   id: string;
@@ -9,8 +9,11 @@ interface CartItem {
 }
 
 interface CartContextType {
+  cart: CartItem[];
   items: CartItem[];
-  addItem: (product: CartItem) => void;
+  addToCart: (item: CartItem) => void;
+  addItem: (item: CartItem) => void;
+  removeFromCart: (id: string) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -19,79 +22,80 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [total, setTotal] = useState(0);
 
   // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-      setItems(JSON.parse(savedCart));
+      setCart(JSON.parse(savedCart));
     }
   }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items));
+    localStorage.setItem('cart', JSON.stringify(cart));
     // Calculate total
-    const newTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const newTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     setTotal(newTotal);
-  }, [items]);
+  }, [cart]);
 
-  const addItem = (product: CartItem) => {
-    setItems(currentItems => {
-      const existingItem = currentItems.find(item => item.id === product.id);
+  const addToCart = (item: CartItem) => {
+    setCart(prev => {
+      const existingItem = prev.find(i => i.id === item.id);
       if (existingItem) {
         // Check if adding more would exceed stock
-        if (existingItem.quantity + 1 > product.stock) {
-          return currentItems;
+        if (existingItem.quantity + 1 > item.stock) {
+          return prev;
         }
-        return currentItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+        return prev.map(i =>
+          i.id === item.id
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
         );
       }
-      return [...currentItems, { ...product, quantity: 1 }];
+      return [...prev, { ...item, quantity: 1 }];
     });
   };
 
-  const removeItem = (id: string) => {
-    setItems(currentItems => currentItems.filter(item => item.id !== id));
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const clearCart = () => {
+    setCart([]);
   };
 
   const updateQuantity = (id: string, quantity: number) => {
     if (quantity < 1) return;
-    setItems(currentItems =>
-      currentItems.map(item => {
-        if (item.id === id) {
-          // Check if new quantity would exceed stock
-          if (quantity > item.stock) {
-            return item;
-          }
-          return { ...item, quantity };
-        }
-        return item;
-      })
-    );
-  };
-
-  const clearCart = () => {
-    setItems([]);
+    setCart(prev => prev.map(item => 
+      item.id === id ? { ...item, quantity } : item
+    ));
   };
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total }}>
+    <CartContext.Provider value={{ 
+      cart, 
+      items: cart, 
+      addToCart,
+      addItem: addToCart,
+      removeFromCart,
+      removeItem: removeFromCart, 
+      updateQuantity, 
+      clearCart, 
+      total 
+    }}>
       {children}
     </CartContext.Provider>
   );
-}
+};
 
-export function useCart() {
+export const useCart = () => {
   const context = useContext(CartContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
-} 
+}; 

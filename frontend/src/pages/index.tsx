@@ -107,8 +107,6 @@ export default function Home() {
         </div>
       )}
 
-
-
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Products</h2>
@@ -118,38 +116,44 @@ export default function Home() {
               key={product.id}
               className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-200 hover:shadow-lg hover:-translate-y-1"
             >
-              {product.image && (
-                <div className="aspect-w-16 aspect-h-9">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-              )}
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.name}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-xl font-bold text-indigo-600">${product.price}</p>
-                    <p className="text-sm text-gray-500">
-                      {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-                    </p>
+              <Link href={`/products/${product.id}`}>
+                <div className="cursor-pointer">
+                  {product.image && (
+                    <div className="aspect-w-16 aspect-h-9">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-48 object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.name}</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-xl font-bold text-indigo-600">${product.price}</p>
+                        <p className="text-sm text-gray-500">
+                          {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleAddToCart(product)}
-                    disabled={product.stock === 0}
-                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white transition-colors duration-200 ${
-                      product.stock === 0
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-indigo-600 hover:bg-indigo-700'
-                    }`}
-                  >
-                    <FaPlus className="mr-2" />
-                    Add to Cart
-                  </button>
                 </div>
+              </Link>
+              <div className="px-6 pb-6">
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  disabled={product.stock === 0}
+                  className={`w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white transition-colors duration-200 ${
+                    product.stock === 0
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-indigo-600 hover:bg-indigo-700'
+                  }`}
+                >
+                  <FaPlus className="mr-2" />
+                  Add to Cart
+                </button>
               </div>
             </div>
           ))}

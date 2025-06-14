@@ -23,11 +23,10 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async register(registerDto) {
-        const user = await this.authService.register(registerDto);
-        return { message: 'User registered successfully', user };
+        return this.authService.register(registerDto.email, registerDto.password, registerDto.name);
     }
     async login(loginDto) {
-        return this.authService.login(loginDto);
+        return this.authService.login(loginDto.email, loginDto.password);
     }
     async verify() {
         return { message: 'Token is valid' };

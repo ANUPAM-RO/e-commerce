@@ -5,5 +5,6 @@
   "/cart": "pages/cart.js",
   "/login": "pages/login.js",
   "/orders": "pages/orders.js",
+  "/products/[id]": "pages/products/[id].js",
   "/register": "pages/register.js"
 }

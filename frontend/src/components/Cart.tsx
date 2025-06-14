@@ -1,83 +1,285 @@
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-}
+import React, { useState, useEffect } from 'react';
+import { Table, Button, message, Modal, Form, Input } from 'antd';
+import { DeleteOutlined, ShoppingCartOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
+import axios from 'axios';
+import Link from 'next/link';
 
-interface CartItem {
-  productId: string;
-  quantity: number;
-}
+const Cart: React.FC = () => {
+  const { cart, removeFromCart, clearCart } = useCart();
+  const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
 
-interface CartProps {
-  cart: CartItem[];
-  products: Product[];
-  onUpdateQuantity: (productId: string, quantity: number) => void;
-  onRemoveItem: (productId: string) => void;
-}
+  useEffect(() => {
+    if (isModalOpen && user) {
+      form.setFieldsValue({
+        email: user.email,
+      });
+    }
+  }, [isModalOpen, user, form]);
 
-export default function Cart({ cart, products, onUpdateQuantity, onRemoveItem }: CartProps) {
-  const cartItems = cart.map(item => {
-    const product = products.find(p => p.id === item.productId);
-    return {
-      ...item,
-      product,
-      subtotal: product ? product.price * item.quantity : 0,
-    };
-  });
+  const handleCheckout = async (values: any) => {
+    try {
+      setLoading(true);
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
 
-  const total = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+      // First, create or update customer
+      const customerData = {
+        ...values,
+        userId: user?.id
+      };
 
-  if (cart.length === 0) {
-    return null;
-  }
+      const customerResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/customers`,
+        customerData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      const customerId = customerResponse.data.id;
+
+      // Then create the order
+      const orderData = {
+        customerId,
+        items: cart.map(item => ({
+          productId: item.id,
+          quantity: item.quantity
+        }))
+      };
+
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/orders`,
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      message.success('Order placed successfully!');
+      clearCart();
+      setIsModalOpen(false);
+      form.resetFields();
+    } catch (error) {
+      console.error('Checkout error:', error);
+      message.error('Failed to place order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columns = [
+    {
+      title: 'Product',
+      dataIndex: 'name',
+      key: 'name',
+      width: '40%',
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+      width: '20%',
+      render: (price: number) => `$${price}`,
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      width: '20%',
+    },
+    {
+      title: 'Subtotal',
+      key: 'subtotal',
+      width: '20%',
+      render: (record: any) => `$${(record.price * record.quantity)}`,
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: '10%',
+      render: (record: any) => (
+        <Button
+          type="text"
+          danger
+          icon={<DeleteOutlined />}
+          onClick={() => removeFromCart(record.id)}
+          className="hover:bg-red-50"
+        />
+      ),
+    },
+  ];
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="fixed bottom-0 right-0 w-full md:w-96 bg-white shadow-lg rounded-t-lg p-4">
-      <h2 className="text-xl font-bold mb-4">Shopping Cart</h2>
-      <div className="space-y-4 max-h-96 overflow-y-auto">
-        {cartItems.map(item => (
-          <div key={item.productId} className="flex justify-between items-center">
-            <div>
-              <h3 className="font-medium">{item.product?.name}</h3>
-              <p className="text-sm text-gray-600">${item.product?.price.toFixed(2)}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onUpdateQuantity(item.productId, item.quantity - 1)}
-                className="px-2 py-1 bg-gray-200 rounded"
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">Shopping Cart</h1>
+            <Link href="/">
+              <Button 
+                icon={<ArrowLeftOutlined />}
+                className="flex items-center text-gray-600 hover:text-gray-900"
               >
-                -
-              </button>
-              <span>{item.quantity}</span>
-              <button
-                onClick={() => onUpdateQuantity(item.productId, item.quantity + 1)}
-                className="px-2 py-1 bg-gray-200 rounded"
-              >
-                +
-              </button>
-              <button
-                onClick={() => onRemoveItem(item.productId)}
-                className="ml-2 text-red-600"
-              >
-                ×
-              </button>
-            </div>
+                Continue Shopping
+              </Button>
+            </Link>
           </div>
-        ))}
-      </div>
-      <div className="mt-4 pt-4 border-t">
-        <div className="flex justify-between font-bold">
-          <span>Total:</span>
-          <span>${total.toFixed(2)}</span>
+
+          {cart.length === 0 ? (
+            <div className="text-center py-12">
+              <ShoppingCartOutlined className="text-6xl text-gray-400 mb-4" />
+              <p className="text-xl text-gray-500">Your cart is empty</p>
+              <Link href="/">
+                <Button type="primary" className="mt-4">
+                  Start Shopping
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <Table
+                columns={columns}
+                dataSource={cart}
+                rowKey="id"
+                pagination={false}
+                className="mb-6"
+              />
+              <div className="border-t border-gray-200 pt-6">
+                <div className="flex justify-between items-center">
+                  <div className="text-xl font-bold text-gray-900">
+                    Total: ${total}
+                  </div>
+                  <Button
+                    type="primary"
+                    size="large"
+                    onClick={() => setIsModalOpen(true)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Proceed to Checkout
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
-        <button
-          onClick={() => {/* TODO: Implement checkout */}}
-          className="w-full mt-4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
-        >
-          Checkout
-        </button>
       </div>
+
+      <Modal
+        title="Enter Your Details"
+        open={isModalOpen}
+        onCancel={() => {
+          setIsModalOpen(false);
+          form.resetFields();
+        }}
+        footer={null}
+        width={600}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleCheckout}
+          className="mt-4"
+        >
+          <div className="grid grid-cols-2 gap-4">
+            {/* <Form.Item
+              name="Name"
+              label="Name"
+              rules={[{ required: true, message: 'Please enter your name' }]}
+            >
+              <Input />
+            </Form.Item> */}
+                    <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: 'Please enter your email' },
+              { type: 'email', message: 'Please enter a valid email' }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+             <Form.Item
+            name="phone"
+            label="Phone"
+            rules={[{ required: true, message: 'Please enter your phone number' }]}
+          >
+            <Input />
+            
+          </Form.Item>
+          </div>
+          <Form.Item
+            name="address"
+            label="Address"
+            rules={[{ required: true, message: 'Please enter your address' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item
+              name="city"
+              label="City"
+              rules={[{ required: true, message: 'Please enter your city' }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name="state"
+              label="State"
+              rules={[{ required: true, message: 'Please enter your state' }]}
+            >
+              <Input />
+            </Form.Item>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item
+              name="zipCode"
+              label="ZIP Code"
+              rules={[{ required: true, message: 'Please enter your ZIP code' }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name="country"
+              label="Country"
+              rules={[{ required: true, message: 'Please enter your country' }]}
+            >
+              <Input />
+            </Form.Item>
+          </div>
+
+          <Form.Item className="mt-6">
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              loading={loading} 
+              block
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Place Order
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
-} 
+};
+
+export default Cart; 

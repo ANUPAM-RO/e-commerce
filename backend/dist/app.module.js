@@ -18,6 +18,7 @@ const auth_module_1 = require("./auth/auth.module");
 const product_entity_1 = require("./products/entities/product.entity");
 const order_entity_1 = require("./orders/entities/order.entity");
 const order_item_entity_1 = require("./orders/entities/order-item.entity");
+const user_entity_1 = require("./users/entities/user.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -39,7 +40,7 @@ exports.AppModule = AppModule = __decorate([
                     database: configService.get('DB_DATABASE', 'ecommerce_db'),
                     synchronize: configService.get('DB_SYNC', true),
                     logging: configService.get('DB_LOGGING', false),
-                    entities: [product_entity_1.Product, order_entity_1.Order, order_item_entity_1.OrderItem],
+                    entities: [product_entity_1.Product, order_entity_1.Order, order_item_entity_1.OrderItem, user_entity_1.User],
                     autoLoadEntities: true,
                 }),
             }),

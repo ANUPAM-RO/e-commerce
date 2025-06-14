@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { Product } from './products/entities/product.entity';
 import { Order } from './orders/entities/order.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
         database: configService.get('DB_DATABASE', 'ecommerce_db'),
         synchronize: configService.get('DB_SYNC', true),
         logging: configService.get('DB_LOGGING', false),
-        entities: [Product, Order, OrderItem],
+        entities: [Product, Order, OrderItem, User],
         autoLoadEntities: true,
       }),
     }),

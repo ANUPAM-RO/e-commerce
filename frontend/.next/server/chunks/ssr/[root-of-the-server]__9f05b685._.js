@@ -73,7 +73,7 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
 ;
 const AuthContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["createContext"])(undefined);
 function AuthProvider({ children }) {
-    const [isAuthenticated, setIsAuthenticated] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
+    const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(true);
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
@@ -90,24 +90,31 @@ function AuthProvider({ children }) {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                setIsAuthenticated(true);
+                setUser({
+                    id: '1',
+                    email: 'example@example.com'
+                });
             } catch (error) {
                 // If token is invalid, clear it
                 localStorage.removeItem('token');
-                setIsAuthenticated(false);
+                setUser(null);
             } finally{
                 setLoading(false);
             }
         };
         validateToken();
     }, []);
-    const login = (token)=>{
-        localStorage.setItem('token', token);
-        setIsAuthenticated(true);
+    const login = async (email, password)=>{
+        // Implement login logic here
+        // For now, just set a mock user
+        setUser({
+            id: '1',
+            email
+        });
     };
     const logout = ()=>{
         localStorage.removeItem('token');
-        setIsAuthenticated(false);
+        setUser(null);
         router.push('/login');
     };
     if (loading) {
@@ -117,18 +124,18 @@ function AuthProvider({ children }) {
                 className: "animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"
             }, void 0, false, {
                 fileName: "[project]/src/context/AuthContext.tsx",
-                lineNumber: 61,
+                lineNumber: 67,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/context/AuthContext.tsx",
-            lineNumber: 60,
+            lineNumber: 66,
             columnNumber: 7
         }, this);
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(AuthContext.Provider, {
         value: {
-            isAuthenticated,
+            user,
             login,
             logout,
             loading
@@ -136,7 +143,7 @@ function AuthProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/src/context/AuthContext.tsx",
-        lineNumber: 67,
+        lineNumber: 73,
         columnNumber: 5
     }, this);
 }
@@ -163,92 +170,75 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$
 ;
 ;
 const CartContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["createContext"])(undefined);
-function CartProvider({ children }) {
-    const [items, setItems] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
+const CartProvider = ({ children })=>{
+    const [cart, setCart] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
     const [total, setTotal] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(0);
     // Load cart from localStorage on mount
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
-            setItems(JSON.parse(savedCart));
+            setCart(JSON.parse(savedCart));
         }
     }, []);
     // Save cart to localStorage whenever it changes
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
-        localStorage.setItem('cart', JSON.stringify(items));
+        localStorage.setItem('cart', JSON.stringify(cart));
         // Calculate total
-        const newTotal = items.reduce((sum, item)=>sum + item.price * item.quantity, 0);
+        const newTotal = cart.reduce((sum, item)=>sum + item.price * item.quantity, 0);
         setTotal(newTotal);
     }, [
-        items
+        cart
     ]);
-    const addItem = (product)=>{
-        setItems((currentItems)=>{
-            const existingItem = currentItems.find((item)=>item.id === product.id);
+    const addToCart = (item)=>{
+        setCart((prev)=>{
+            const existingItem = prev.find((i)=>i.id === item.id);
             if (existingItem) {
                 // Check if adding more would exceed stock
-                if (existingItem.quantity + 1 > product.stock) {
-                    return currentItems;
+                if (existingItem.quantity + 1 > item.stock) {
+                    return prev;
                 }
-                return currentItems.map((item)=>item.id === product.id ? {
-                        ...item,
-                        quantity: item.quantity + 1
-                    } : item);
+                return prev.map((i)=>i.id === item.id ? {
+                        ...i,
+                        quantity: i.quantity + 1
+                    } : i);
             }
             return [
-                ...currentItems,
+                ...prev,
                 {
-                    ...product,
+                    ...item,
                     quantity: 1
                 }
             ];
         });
     };
-    const removeItem = (id)=>{
-        setItems((currentItems)=>currentItems.filter((item)=>item.id !== id));
-    };
-    const updateQuantity = (id, quantity)=>{
-        if (quantity < 1) return;
-        setItems((currentItems)=>currentItems.map((item)=>{
-                if (item.id === id) {
-                    // Check if new quantity would exceed stock
-                    if (quantity > item.stock) {
-                        return item;
-                    }
-                    return {
-                        ...item,
-                        quantity
-                    };
-                }
-                return item;
-            }));
+    const removeFromCart = (id)=>{
+        setCart((prev)=>prev.filter((item)=>item.id !== id));
     };
     const clearCart = ()=>{
-        setItems([]);
+        setCart([]);
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(CartContext.Provider, {
         value: {
-            items,
-            addItem,
-            removeItem,
-            updateQuantity,
+            cart,
+            addToCart,
+            removeFromCart,
             clearCart,
             total
         },
         children: children
     }, void 0, false, {
         fileName: "[project]/src/context/CartContext.tsx",
-        lineNumber: 85,
+        lineNumber: 68,
         columnNumber: 5
     }, this);
-}
-function useCart() {
+};
+const useCart = ()=>{
     const context = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useContext"])(CartContext);
-    if (context === undefined) {
+    if (!context) {
         throw new Error('useCart must be used within a CartProvider');
     }
     return context;
-}
+};
 }}),
 "[project]/src/components/Navbar.tsx [ssr] (ecmascript)": ((__turbopack_context__) => {
 "use strict";

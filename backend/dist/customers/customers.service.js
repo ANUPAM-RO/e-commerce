@@ -17,19 +17,46 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const customer_entity_1 = require("./entities/customer.entity");
+const user_entity_1 = require("../users/entities/user.entity");
 let CustomersService = class CustomersService {
-    constructor(customersRepository) {
-        this.customersRepository = customersRepository;
+    constructor(customerRepository, userRepository) {
+        this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
     }
     async create(createCustomerDto) {
-        const customer = this.customersRepository.create(createCustomerDto);
-        return await this.customersRepository.save(customer);
+        const existingCustomer = await this.findByUserId(createCustomerDto.userId);
+        if (existingCustomer) {
+            Object.assign(existingCustomer, createCustomerDto);
+            return this.customerRepository.save(existingCustomer);
+        }
+        const user = await this.userRepository.findOne({
+            where: { id: createCustomerDto.userId }
+        });
+        if (!user) {
+            throw new common_1.NotFoundException(`User with ID ${createCustomerDto.userId} not found`);
+        }
+        const customer = this.customerRepository.create({
+            ...createCustomerDto,
+            email: user.email
+        });
+        return this.customerRepository.save(customer);
+    }
+    async findByUserId(userId) {
+        return this.customerRepository.findOne({
+            where: { userId: userId },
+            relations: ['user']
+        });
     }
     async findAll() {
-        return await this.customersRepository.find();
+        return await this.customerRepository.find({
+            relations: ['user']
+        });
     }
     async findOne(id) {
-        const customer = await this.customersRepository.findOne({ where: { id } });
+        const customer = await this.customerRepository.findOne({
+            where: { id },
+            relations: ['user']
+        });
         if (!customer) {
             throw new common_1.NotFoundException(`Customer with ID ${id} not found`);
         }
@@ -38,17 +65,19 @@ let CustomersService = class CustomersService {
     async update(id, updateCustomerDto) {
         const customer = await this.findOne(id);
         Object.assign(customer, updateCustomerDto);
-        return await this.customersRepository.save(customer);
+        return await this.customerRepository.save(customer);
     }
     async remove(id) {
         const customer = await this.findOne(id);
-        await this.customersRepository.remove(customer);
+        await this.customerRepository.remove(customer);
     }
 };
 exports.CustomersService = CustomersService;
 exports.CustomersService = CustomersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(customer_entity_1.Customer)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], CustomersService);
 //# sourceMappingURL=customers.service.js.map

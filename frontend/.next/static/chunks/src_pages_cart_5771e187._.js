@@ -1,13 +1,25 @@
 (globalThis.TURBOPACK_CHUNK_LISTS = globalThis.TURBOPACK_CHUNK_LISTS || []).push({
     script: typeof document === "object" ? document.currentScript : undefined,
     chunks: [
-  "static/chunks/node_modules_next_2a837943._.js",
+  "static/chunks/node_modules_next_85a7fad4._.js",
   "static/chunks/node_modules_react-dom_82bb97c6._.js",
+  "static/chunks/node_modules_rc-table_es_8d0aef90._.js",
+  "static/chunks/node_modules_antd_es_table_d621e155._.js",
+  "static/chunks/node_modules_antd_es_form_ebefe2a0._.js",
+  "static/chunks/node_modules_antd_es_modal_92460540._.js",
+  "static/chunks/node_modules_antd_es_input_14dcb219._.js",
+  "static/chunks/node_modules_antd_es_bd825a47._.js",
+  "static/chunks/node_modules_cc516dad._.js",
+  "static/chunks/node_modules_rc-tree_es_1a63c3de._.js",
+  "static/chunks/node_modules_@ant-design_cssinjs_es_5961f202._.js",
+  "static/chunks/node_modules_rc-field-form_es_ba2afd7e._.js",
+  "static/chunks/node_modules_rc-menu_es_837e82b4._.js",
+  "static/chunks/node_modules_rc-select_es_4f62076c._.js",
   "static/chunks/node_modules_axios_lib_9aa2336a._.js",
-  "static/chunks/node_modules_react-icons_fa_index_mjs_bad01e3f._.js",
-  "static/chunks/node_modules_react-icons_lib_75a63dfe._.js",
-  "static/chunks/node_modules_2a5cf4bb._.js",
-  "static/chunks/[root-of-the-server]__32cffd8b._.js"
+  "static/chunks/node_modules_@rc-component_6bd941ba._.js",
+  "static/chunks/node_modules_@ant-design_7b1a9283._.js",
+  "static/chunks/node_modules_5643563a._.js",
+  "static/chunks/[root-of-the-server]__afd41cc3._.js"
 ],
     source: "entry"
 });

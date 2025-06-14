@@ -1,79 +1,138 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/router';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { message } from 'antd';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
 
 interface AuthContextType {
+  user: User | null;
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
-  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
+  // Set up axios interceptor for token handling
   useEffect(() => {
-    const validateToken = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
+    const interceptor = axios.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
+    );
 
-      try {
-        // Verify token with backend
-        await axios.get('http://localhost:3001/api/auth/verify', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setIsAuthenticated(true);
-      } catch (error) {
-        // If token is invalid, clear it
-        localStorage.removeItem('token');
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
+    // Clean up interceptor on unmount
+    return () => {
+      axios.interceptors.request.eject(interceptor);
     };
-
-    validateToken();
   }, []);
 
-  const login = (token: string) => {
-    localStorage.setItem('token', token);
-    setIsAuthenticated(true);
+  useEffect(() => {
+    // Check for stored user data on mount
+    const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    
+    if (storedUser && token) {
+      setUser(JSON.parse(storedUser));
+      setIsAuthenticated(true);
+      // Set default authorization header
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        email,
+        password,
+      });
+
+      const { access_token, user: userData } = response.data;
+
+      // Save token and user data to localStorage
+      localStorage.setItem('token', access_token);
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      // Set auth header for future requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+
+      setUser(userData);
+      setIsAuthenticated(true);
+      message.success('Login successful!');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      message.error(error.response?.data?.message || 'Login failed. Please try again.');
+      throw error;
+    }
+  };
+
+  const register = async (email: string, password: string, name: string) => {
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+        email,
+        password,
+        name
+      });
+
+      const { token, user: userData } = response.data;
+
+      // Save token and user data to localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      // Set auth header for future requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      setUser(userData);
+      setIsAuthenticated(true);
+      message.success('Registration successful!');
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      message.error(error.response?.data?.message || 'Registration failed. Please try again.');
+      throw error;
+    }
   };
 
   const logout = () => {
+    // Clear localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    // Clear auth header
+    delete axios.defaults.headers.common['Authorization'];
+
+    setUser(null);
     setIsAuthenticated(false);
-    router.push('/login');
+    message.success('Logged out successfully!');
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-} 
+}; 

@@ -5,11 +5,20 @@ export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
     register(registerDto: RegisterDto): Promise<{
-        message: string;
-        user: import("./entities/user.entity").User;
+        access_token: string;
+        user: {
+            id: string;
+            name: string;
+            email: string;
+        };
     }>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;
+        user: {
+            id: any;
+            email: any;
+            name: any;
+        };
     }>;
     verify(): Promise<{
         message: string;
