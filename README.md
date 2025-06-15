@@ -142,10 +142,13 @@ The application will be available at:
 - `DELETE /api/products/:id` - Delete product (admin)
 
 ### Orders
-- `GET /api/orders` - Get user orders
+
+- `GET /api/orders` - Get all orders (Admin)
+- `GET /api/orders/user/:userId` - Get orders by user ID
+- `GET /api/orders/:id` - Get order by ID
 - `POST /api/orders` - Create new order
-- `GET /api/orders/:id` - Get order details
-- `PUT /api/orders/:id` - Update order status (admin)
+- `PATCH /api/orders/:id` - Update order status (Admin)
+- `POST /api/orders/:id/cancel` - Cancel order
 
 ### Cart
 - `GET /api/cart` - Get user cart
