@@ -551,12 +551,12 @@ const AuthProvider = ({ children })=>{
                 password,
                 name
             });
-            const { token, user: userData } = response.data;
+            const { access_token, user: userData } = response.data;
             // Save token and user data to localStorage
-            localStorage.setItem('token', token);
+            localStorage.setItem('token', access_token);
             localStorage.setItem('user', JSON.stringify(userData));
             // Set auth header for future requests
-            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
             setUser(userData);
             setIsAuthenticated(true);
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].success('Registration successful!');

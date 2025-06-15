@@ -1,18 +1,49 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitMQService } from './rabbitmq.service';
 
 @Module({
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'RABBITMQ_SERVICE',
+        name: 'PRODUCT_SERVICE',
+        imports: [ConfigModule],
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [configService.get('RABBITMQ_URL') as string],
-            queue: configService.get('RABBITMQ_QUEUE_PRODUCT_ORDER'),
+            urls: [configService.get<string>('RABBITMQ_URL') || 'amqp://localhost:5672'],
+            queue: 'product_queue',
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: 'ORDER_SERVICE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('RABBITMQ_URL') || 'amqp://localhost:5672'],
+            queue: 'order_queue',
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: 'CUSTOMER_SERVICE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('RABBITMQ_URL') || 'amqp://localhost:5672'],
+            queue: 'customer_queue',
             queueOptions: {
               durable: true,
             },
@@ -23,6 +54,6 @@ import { RabbitMQService } from './rabbitmq.service';
     ]),
   ],
   providers: [RabbitMQService],
-  exports: [RabbitMQService],
+  exports: [ClientsModule, RabbitMQService],
 })
 export class RabbitMQModule {} 

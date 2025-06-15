@@ -8,16 +8,29 @@ import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'ecommerce-secret-key-2024';
+
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your-secret-key',
-      signOptions: { expiresIn: '1d' },
+      secret: JWT_SECRET,
+      signOptions: { 
+        expiresIn: '24h',
+        algorithm: 'HS256'
+      },
     }),
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [AuthService, JwtStrategy, UsersService],
+  providers: [
+    AuthService, 
+    JwtStrategy, 
+    UsersService,
+    {
+      provide: 'JWT_SECRET',
+      useValue: JWT_SECRET
+    }
+  ],
   controllers: [AuthController],
   exports: [AuthService],
 })

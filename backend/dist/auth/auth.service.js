@@ -61,15 +61,11 @@ let AuthService = class AuthService {
     }
     async validateUser(email, password) {
         const user = await this.usersService.findByEmail(email);
-        if (!user) {
-            return null;
+        if (user && await bcrypt.compare(password, user.password)) {
+            const { password, ...result } = user;
+            return result;
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return null;
-        }
-        const { password: _, ...result } = user;
-        return result;
+        return null;
     }
     async register(email, password, name) {
         const existingUser = await this.usersService.findByEmail(email);
@@ -77,17 +73,20 @@ let AuthService = class AuthService {
             throw new common_1.ConflictException('Email already exists');
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = this.usersRepository.create({
+        const user = await this.usersService.create({
             email,
             password: hashedPassword,
-            name
+            name,
         });
-        const savedUser = await this.usersRepository.save(user);
-        const { password: _, ...result } = savedUser;
-        const payload = { email: result.email, sub: result.id };
+        const payload = { email: user.email, sub: user.id };
+        const token = this.jwtService.sign(payload);
         return {
-            access_token: this.jwtService.sign(payload),
-            user: result
+            access_token: token,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name
+            }
         };
     }
     async login(email, password) {
@@ -96,14 +95,28 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid email or password');
         }
         const payload = { email: user.email, sub: user.id };
+        const token = this.jwtService.sign(payload);
         return {
-            access_token: this.jwtService.sign(payload),
+            access_token: token,
             user: {
                 id: user.id,
                 email: user.email,
                 name: user.name
             }
         };
+    }
+    async verifyToken(token) {
+        try {
+            const payload = this.jwtService.verify(token);
+            const user = await this.usersService.findByEmail(payload.email);
+            if (!user) {
+                throw new common_1.UnauthorizedException('User not found');
+            }
+            return { userId: payload.sub, email: payload.email, name: user.name };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('Invalid token');
+        }
     }
 };
 exports.AuthService = AuthService;

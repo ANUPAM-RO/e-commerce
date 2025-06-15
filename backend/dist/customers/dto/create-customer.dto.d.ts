@@ -1,5 +1,5 @@
 export declare class CreateCustomerDto {
-    userId: string;
+    userId?: string;
     email: string;
     phone: string;
     address: string;

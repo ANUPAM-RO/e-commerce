@@ -486,6 +486,30 @@ const AuthProvider = ({ children })=>{
     _s();
     const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [isAuthenticated, setIsAuthenticated] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    // Set up axios interceptor for token handling
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "AuthProvider.useEffect": ()=>{
+            const interceptor = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].interceptors.request.use({
+                "AuthProvider.useEffect.use[interceptor]": (config)=>{
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        config.headers.Authorization = `Bearer ${token}`;
+                    }
+                    return config;
+                }
+            }["AuthProvider.useEffect.use[interceptor]"], {
+                "AuthProvider.useEffect.use[interceptor]": (error)=>{
+                    return Promise.reject(error);
+                }
+            }["AuthProvider.useEffect.use[interceptor]"]);
+            // Clean up interceptor on unmount
+            return ({
+                "AuthProvider.useEffect": ()=>{
+                    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].interceptors.request.eject(interceptor);
+                }
+            })["AuthProvider.useEffect"];
+        }
+    }["AuthProvider.useEffect"], []);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AuthProvider.useEffect": ()=>{
             // Check for stored user data on mount
@@ -494,6 +518,8 @@ const AuthProvider = ({ children })=>{
             if (storedUser && token) {
                 setUser(JSON.parse(storedUser));
                 setIsAuthenticated(true);
+                // Set default authorization header
+                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].defaults.headers.common['Authorization'] = `Bearer ${token}`;
             }
         }
     }["AuthProvider.useEffect"], []);
@@ -504,7 +530,6 @@ const AuthProvider = ({ children })=>{
                 password
             });
             const { access_token, user: userData } = response.data;
-            console.log("userData", response.data);
             // Save token and user data to localStorage
             localStorage.setItem('token', access_token);
             localStorage.setItem('user', JSON.stringify(userData));
@@ -519,20 +544,19 @@ const AuthProvider = ({ children })=>{
             throw error;
         }
     };
-    const register = async (email, password, firstName, lastName)=>{
+    const register = async (email, password, name)=>{
         try {
             const response = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].post(`${("TURBOPACK compile-time value", "http://localhost:3001/api")}/auth/register`, {
                 email,
                 password,
-                firstName,
-                lastName
+                name
             });
-            const { token, user: userData } = response.data;
+            const { access_token, user: userData } = response.data;
             // Save token and user data to localStorage
-            localStorage.setItem('token', token);
+            localStorage.setItem('token', access_token);
             localStorage.setItem('user', JSON.stringify(userData));
             // Set auth header for future requests
-            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
             setUser(userData);
             setIsAuthenticated(true);
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].success('Registration successful!');
@@ -563,11 +587,11 @@ const AuthProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/src/context/AuthContext.tsx",
-        lineNumber: 108,
+        lineNumber: 126,
         columnNumber: 5
     }, this);
 };
-_s(AuthProvider, "Uq7KcTiOseX3k63CKoUNgtSkdNA=");
+_s(AuthProvider, "Es9VRuubQSTt9E+Juy2JGCCc0ro=");
 _c = AuthProvider;
 const useAuth = ()=>{
     _s1();

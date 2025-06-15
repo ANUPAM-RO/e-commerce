@@ -90,14 +90,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name
       });
 
-      const { token, user: userData } = response.data;
+      const { access_token, user: userData } = response.data;
 
       // Save token and user data to localStorage
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify(userData));
 
       // Set auth header for future requests
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
 
       setUser(userData);
       setIsAuthenticated(true);

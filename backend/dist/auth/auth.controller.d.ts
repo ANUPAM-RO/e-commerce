@@ -8,8 +8,8 @@ export declare class AuthController {
         access_token: string;
         user: {
             id: string;
-            name: string;
             email: string;
+            name: string;
         };
     }>;
     login(loginDto: LoginDto): Promise<{

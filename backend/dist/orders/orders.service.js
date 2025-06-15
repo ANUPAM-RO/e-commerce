@@ -20,6 +20,7 @@ const order_entity_1 = require("./entities/order.entity");
 const order_item_entity_1 = require("./entities/order-item.entity");
 const products_service_1 = require("../products/products.service");
 const rabbitmq_service_1 = require("../rabbitmq/rabbitmq.service");
+const message_patterns_1 = require("../rabbitmq/message-patterns");
 let OrdersService = class OrdersService {
     constructor(orderRepository, orderItemRepository, productsService, rabbitMQService) {
         this.orderRepository = orderRepository;
@@ -58,7 +59,7 @@ let OrdersService = class OrdersService {
         savedOrder.totalAmount = totalAmount;
         savedOrder.orderItems = orderItems;
         const updatedOrder = await this.orderRepository.save(savedOrder);
-        await this.rabbitMQService.publishOrderCreated(updatedOrder);
+        await this.rabbitMQService.publishOrderMessage(message_patterns_1.ORDER_PATTERNS.CREATED, updatedOrder);
         return updatedOrder;
     }
     async findAll() {
@@ -80,7 +81,7 @@ let OrdersService = class OrdersService {
         const order = await this.findOne(id);
         Object.assign(order, updateOrderDto);
         const updatedOrder = await this.orderRepository.save(order);
-        await this.rabbitMQService.publishOrderUpdated(updatedOrder);
+        await this.rabbitMQService.publishOrderMessage(message_patterns_1.ORDER_PATTERNS.UPDATED, updatedOrder);
         return updatedOrder;
     }
     async cancel(id) {
@@ -95,7 +96,7 @@ let OrdersService = class OrdersService {
         }
         order.status = 'cancelled';
         const cancelledOrder = await this.orderRepository.save(order);
-        await this.rabbitMQService.publishOrderCancelled(cancelledOrder);
+        await this.rabbitMQService.publishOrderMessage(message_patterns_1.ORDER_PATTERNS.CANCELLED, cancelledOrder);
         return cancelledOrder;
     }
 };

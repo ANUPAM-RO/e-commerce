@@ -12,8 +12,8 @@ export declare class AuthService {
         access_token: string;
         user: {
             id: string;
-            name: string;
             email: string;
+            name: string;
         };
     }>;
     login(email: string, password: string): Promise<{
@@ -23,5 +23,10 @@ export declare class AuthService {
             email: any;
             name: any;
         };
+    }>;
+    verifyToken(token: string): Promise<{
+        userId: any;
+        email: any;
+        name: string;
     }>;
 }

@@ -36,16 +36,21 @@ const Cart: React.FC = () => {
         userId: user?.id
       };
 
+      console.log('Creating customer with data:', customerData);
+      console.log('Using token:', token);
+
       const customerResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/customers`,
         customerData,
         {
           headers: {
-            Authorization: `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
         }
       );
       
+      console.log('Customer response:', customerResponse.data);
       const customerId = customerResponse.data.id;
 
       // Then create the order
@@ -57,23 +62,30 @@ const Cart: React.FC = () => {
         }))
       };
 
-      await axios.post(
+      const orderResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/orders`,
         orderData,
         {
           headers: {
-            Authorization: `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
         }
       );
       
+      console.log('Order response:', orderResponse.data);
       message.success('Order placed successfully!');
       clearCart();
       setIsModalOpen(false);
       form.resetFields();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Checkout error:', error);
-      message.error('Failed to place order. Please try again.');
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        message.error(error.response.data.message || 'Failed to place order. Please try again.');
+      } else {
+        message.error('Failed to place order. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

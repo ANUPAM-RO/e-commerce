@@ -16,6 +16,7 @@ const auth_controller_1 = require("./auth.controller");
 const user_entity_1 = require("../users/entities/user.entity");
 const users_service_1 = require("../users/users.service");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
+const JWT_SECRET = process.env.JWT_SECRET || 'ecommerce-secret-key-2024';
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -24,12 +25,23 @@ exports.AuthModule = AuthModule = __decorate([
         imports: [
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET || 'your-secret-key',
-                signOptions: { expiresIn: '1d' },
+                secret: JWT_SECRET,
+                signOptions: {
+                    expiresIn: '24h',
+                    algorithm: 'HS256'
+                },
             }),
             typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
         ],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, users_service_1.UsersService],
+        providers: [
+            auth_service_1.AuthService,
+            jwt_strategy_1.JwtStrategy,
+            users_service_1.UsersService,
+            {
+                provide: 'JWT_SECRET',
+                useValue: JWT_SECRET
+            }
+        ],
         controllers: [auth_controller_1.AuthController],
         exports: [auth_service_1.AuthService],
     })

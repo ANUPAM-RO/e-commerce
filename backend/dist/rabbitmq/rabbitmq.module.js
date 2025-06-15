@@ -19,12 +19,43 @@ exports.RabbitMQModule = RabbitMQModule = __decorate([
         imports: [
             microservices_1.ClientsModule.registerAsync([
                 {
-                    name: 'RABBITMQ_SERVICE',
+                    name: 'PRODUCT_SERVICE',
+                    imports: [config_1.ConfigModule],
                     useFactory: (configService) => ({
                         transport: microservices_1.Transport.RMQ,
                         options: {
-                            urls: [configService.get('RABBITMQ_URL')],
-                            queue: configService.get('RABBITMQ_QUEUE_PRODUCT_ORDER'),
+                            urls: [configService.get('RABBITMQ_URL') || 'amqp://localhost:5672'],
+                            queue: 'product_queue',
+                            queueOptions: {
+                                durable: true,
+                            },
+                        },
+                    }),
+                    inject: [config_1.ConfigService],
+                },
+                {
+                    name: 'ORDER_SERVICE',
+                    imports: [config_1.ConfigModule],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.RMQ,
+                        options: {
+                            urls: [configService.get('RABBITMQ_URL') || 'amqp://localhost:5672'],
+                            queue: 'order_queue',
+                            queueOptions: {
+                                durable: true,
+                            },
+                        },
+                    }),
+                    inject: [config_1.ConfigService],
+                },
+                {
+                    name: 'CUSTOMER_SERVICE',
+                    imports: [config_1.ConfigModule],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.RMQ,
+                        options: {
+                            urls: [configService.get('RABBITMQ_URL') || 'amqp://localhost:5672'],
+                            queue: 'customer_queue',
                             queueOptions: {
                                 durable: true,
                             },
@@ -35,7 +66,7 @@ exports.RabbitMQModule = RabbitMQModule = __decorate([
             ]),
         ],
         providers: [rabbitmq_service_1.RabbitMQService],
-        exports: [rabbitmq_service_1.RabbitMQService],
+        exports: [microservices_1.ClientsModule, rabbitmq_service_1.RabbitMQService],
     })
 ], RabbitMQModule);
 //# sourceMappingURL=rabbitmq.module.js.map

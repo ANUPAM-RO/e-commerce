@@ -45,8 +45,8 @@ function Orders() {
                     throw new Error('No authentication token found');
                 }
                 const decodedToken = JSON.parse(atob(token.split('.')[1]));
-                const customerId = decodedToken.sub;
-                const response = await __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].get(`http://localhost:3001/api/orders?customerId=${customerId}`, {
+                const userId = decodedToken.sub;
+                const response = await __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].get(`${("TURBOPACK compile-time value", "http://localhost:3001/api")}/orders?userId=${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

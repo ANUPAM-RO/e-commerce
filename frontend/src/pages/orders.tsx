@@ -51,9 +51,9 @@ export default function Orders() {
         }
 
         const decodedToken = JSON.parse(atob(token.split('.')[1]));
-        const customerId = decodedToken.sub;
+        const userId = decodedToken.sub;
 
-        const response = await axios.get(`http://localhost:3001/api/orders?customerId=${customerId}`, {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders?userId=${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

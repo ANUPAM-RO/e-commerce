@@ -7,6 +7,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ProductsService } from '../products/products.service';
 import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
+import { ORDER_PATTERNS } from '../rabbitmq/message-patterns';
 
 @Injectable()
 export class OrdersService {
@@ -66,7 +67,7 @@ export class OrdersService {
     const updatedOrder = await this.orderRepository.save(savedOrder);
     
     // Publish order created event
-    await this.rabbitMQService.publishOrderCreated(updatedOrder);
+    await this.rabbitMQService.publishOrderMessage(ORDER_PATTERNS.CREATED, updatedOrder);
 
     return updatedOrder;
   }
@@ -97,7 +98,7 @@ export class OrdersService {
     const updatedOrder = await this.orderRepository.save(order);
     
     // Publish order updated event
-    await this.rabbitMQService.publishOrderUpdated(updatedOrder);
+    await this.rabbitMQService.publishOrderMessage(ORDER_PATTERNS.UPDATED, updatedOrder);
 
     return updatedOrder;
   }
@@ -120,7 +121,7 @@ export class OrdersService {
     const cancelledOrder = await this.orderRepository.save(order);
     
     // Publish order cancelled event
-    await this.rabbitMQService.publishOrderCancelled(cancelledOrder);
+    await this.rabbitMQService.publishOrderMessage(ORDER_PATTERNS.CANCELLED, cancelledOrder);
 
     return cancelledOrder;
   }
