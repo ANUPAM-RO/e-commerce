@@ -654,19 +654,20 @@ const CartProvider = ({ children })=>{
             const existingItem = prev.find((i)=>i.id === item.id);
             if (existingItem) {
                 // Check if adding more would exceed stock
-                if (existingItem.quantity + 1 > item.stock) {
+                const newQuantity = existingItem.quantity + item.quantity;
+                if (newQuantity > item.stock) {
                     return prev;
                 }
                 return prev.map((i)=>i.id === item.id ? {
                         ...i,
-                        quantity: i.quantity + 1
+                        quantity: newQuantity
                     } : i);
             }
             return [
                 ...prev,
                 {
                     ...item,
-                    quantity: 1
+                    quantity: item.quantity
                 }
             ];
         });
@@ -679,10 +680,21 @@ const CartProvider = ({ children })=>{
     };
     const updateQuantity = (id, quantity)=>{
         if (quantity < 1) return;
-        setCart((prev)=>prev.map((item)=>item.id === id ? {
-                    ...item,
-                    quantity
-                } : item));
+        setCart((prev)=>prev.map((item)=>{
+                if (item.id === id) {
+                    // Ensure we don't exceed stock
+                    const newQuantity = Math.min(quantity, item.stock);
+                    return {
+                        ...item,
+                        quantity: newQuantity
+                    };
+                }
+                return item;
+            }));
+    };
+    const getItemQuantity = (id)=>{
+        const item = cart.find((item)=>item.id === id);
+        return item ? item.quantity : 0;
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(CartContext.Provider, {
         value: {
@@ -694,12 +706,13 @@ const CartProvider = ({ children })=>{
             removeItem: removeFromCart,
             updateQuantity,
             clearCart,
-            total
+            total,
+            getItemQuantity
         },
         children: children
     }, void 0, false, {
         fileName: "[project]/src/context/CartContext.tsx",
-        lineNumber: 79,
+        lineNumber: 91,
         columnNumber: 5
     }, this);
 };

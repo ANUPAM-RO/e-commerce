@@ -18,6 +18,7 @@ interface CartContextType {
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   total: number;
+  getItemQuantity: (id: string) => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -47,16 +48,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const existingItem = prev.find(i => i.id === item.id);
       if (existingItem) {
         // Check if adding more would exceed stock
-        if (existingItem.quantity + 1 > item.stock) {
+        const newQuantity = existingItem.quantity + item.quantity;
+        if (newQuantity > item.stock) {
           return prev;
         }
         return prev.map(i =>
           i.id === item.id
-            ? { ...i, quantity: i.quantity + 1 }
+            ? { ...i, quantity: newQuantity }
             : i
         );
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, quantity: item.quantity }];
     });
   };
 
@@ -70,9 +72,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateQuantity = (id: string, quantity: number) => {
     if (quantity < 1) return;
-    setCart(prev => prev.map(item => 
-      item.id === id ? { ...item, quantity } : item
-    ));
+    setCart(prev => prev.map(item => {
+      if (item.id === id) {
+        // Ensure we don't exceed stock
+        const newQuantity = Math.min(quantity, item.stock);
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    }));
+  };
+
+  const getItemQuantity = (id: string): number => {
+    const item = cart.find(item => item.id === id);
+    return item ? item.quantity : 0;
   };
 
   return (
@@ -85,7 +97,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       removeItem: removeFromCart, 
       updateQuantity, 
       clearCart, 
-      total 
+      total,
+      getItemQuantity
     }}>
       {children}
     </CartContext.Provider>

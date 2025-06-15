@@ -4,8 +4,9 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import Link from 'next/link';
-import { FaArrowLeft, FaShoppingCart, FaHeart, FaShare, FaStar } from 'react-icons/fa';
+import { FaArrowLeft, FaShoppingCart, FaHeart, FaShare, FaStar, FaPlus, FaMinus } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { message } from 'antd';
 
 interface Product {
   id: string;
@@ -18,45 +19,45 @@ interface Product {
 }
 
 export default function ProductDetail() {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const router = useRouter();
   const { id } = router.query;
   const { isAuthenticated } = useAuth();
-  const { addItem } = useCart();
+  const { addItem, getItemQuantity } = useCart();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    if (!id) return;
-
-    const fetchProduct = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/api/products/${id}`);
-        setProduct(response.data);
-        if (response.data.image) {
-          setSelectedImage(response.data.image);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching product:', error);
-        setError('Failed to load product details');
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [id]);
-
-  const handleAddToCart = () => {
-    if (!product) return;
-    
     if (!isAuthenticated) {
       router.push('/login');
       return;
     }
+
+    if (id) {
+      const fetchProduct = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3001/api/products/${id}`);
+          setProduct(response.data);
+          // Initialize quantity with cart quantity if item exists in cart
+          const cartQuantity = getItemQuantity(response.data.id);
+          if (cartQuantity > 0) {
+            setQuantity(cartQuantity);
+          }
+          setLoading(false);
+        } catch (error) {
+          console.error('Error fetching product:', error);
+          setError('Failed to load product. Please try again later.');
+          setLoading(false);
+        }
+      };
+      fetchProduct();
+    }
+  }, [id, isAuthenticated, router, getItemQuantity]);
+
+  const handleAddToCart = () => {
+    if (!product) return;
 
     addItem({
       id: product.id,
@@ -65,9 +66,23 @@ export default function ProductDetail() {
       stock: product.stock,
       quantity: quantity
     });
-
+    
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
+  };
+
+  const handleIncreaseQuantity = () => {
+    if (product && quantity < product.stock) {
+      setQuantity(prev => prev + 1);
+    } else {
+      message.warning('Cannot exceed available stock');
+    }
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(prev => prev - 1);
+    }
   };
 
   if (loading) {
@@ -124,109 +139,62 @@ export default function ProductDetail() {
           </button>
         </Link>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-            {/* Product Image Section */}
-            <div className="space-y-4">
-              <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-xl bg-gray-100">
-                {selectedImage ? (
-                  <img
-                    src={selectedImage}
-                    alt={product.name}
-                    className="w-full h-full object-cover object-center"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                    <span className="text-gray-400">No image available</span>
-                  </div>
-                )}
-              </div>
-              {product.image && (
-                <div className="grid grid-cols-4 gap-4">
-                  <button
-                    onClick={() => product.image && setSelectedImage(product.image)}
-                    className={`aspect-w-1 aspect-h-1 rounded-lg overflow-hidden ${
-                      selectedImage === product.image ? 'ring-2 ring-indigo-500' : ''
-                    }`}
-                  >
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover object-center"
-                    />
-                  </button>
+            {/* Product Image */}
+            <div className="relative h-96 bg-gray-100 rounded-lg overflow-hidden">
+              {product.image ? (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  No image available
                 </div>
               )}
             </div>
 
-            {/* Product Info Section */}
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-                <div className="mt-2 flex items-center">
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <FaStar
-                        key={star}
-                        className={`h-5 w-5 ${
-                          star <= 4 ? 'text-yellow-400' : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="ml-2 text-sm text-gray-500">(24 reviews)</span>
-                </div>
+            {/* Product Details */}
+            <div className="flex flex-col">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
+              <p className="text-gray-600 mb-6">{product.description}</p>
+              
+              <div className="flex items-center mb-6">
+                <span className="text-3xl font-bold text-gray-900">${product.price}</span>
+                <span className="ml-4 text-sm text-gray-500">In Stock: {product.stock}</span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <p className="text-3xl font-bold text-indigo-600">${product.price}</p>
+              {/* Quantity Controls */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
                 <div className="flex items-center space-x-4">
-                  <button className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                    <FaHeart className="h-6 w-6" />
-                  </button>
-                  <button className="p-2 text-gray-400 hover:text-indigo-500 transition-colors">
-                    <FaShare className="h-6 w-6" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-medium text-gray-900">Description</h3>
-                <p className="mt-2 text-gray-600">{product.description}</p>
-              </div>
-
-              <div className="border-t border-gray-200 pt-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-gray-900">Availability</h3>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    product.stock > 0
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {product.stock > 0 ? `${product.stock} units in stock` : 'Out of stock'}
-                  </span>
-                </div>
-              </div>
-
-              {product.stock > 0 && (
-                <div className="border-t border-gray-200 pt-6">
-                  <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-                    Quantity
-                  </label>
-                  <select
-                    id="quantity"
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  <button
+                    onClick={handleDecreaseQuantity}
+                    disabled={quantity <= 1}
+                    className={`p-2 rounded-md border ${
+                      quantity <= 1
+                        ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                        : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                    }`}
                   >
-                    {[...Array(Math.min(10, product.stock))].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>
-                        {i + 1}
-                      </option>
-                    ))}
-                  </select>
+                    <FaMinus className="h-4 w-4" />
+                  </button>
+                  <span className="w-12 text-center text-lg font-medium">{quantity}</span>
+                  <button
+                    onClick={handleIncreaseQuantity}
+                    disabled={quantity >= product.stock}
+                    className={`p-2 rounded-md border ${
+                      quantity >= product.stock
+                        ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                        : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <FaPlus className="h-4 w-4" />
+                  </button>
                 </div>
-              )}
+              </div>
 
               <div className="border-t border-gray-200 pt-6">
                 <div className="flex space-x-4">

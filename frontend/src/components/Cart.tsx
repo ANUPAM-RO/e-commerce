@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, message, Modal, Form, Input } from 'antd';
-import { DeleteOutlined, ShoppingCartOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ShoppingCartOutlined, ArrowLeftOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import Link from 'next/link';
 
 const Cart: React.FC = () => {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,14 +30,10 @@ const Cart: React.FC = () => {
         throw new Error('No authentication token found');
       }
 
-      // First, create or update customer
       const customerData = {
         ...values,
         userId: user?.id
       };
-
-      console.log('Creating customer with data:', customerData);
-      console.log('Using token:', token);
 
       const customerResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/customers`,
@@ -50,10 +46,8 @@ const Cart: React.FC = () => {
         }
       );
       
-      console.log('Customer response:', customerResponse.data);
       const customerId = customerResponse.data.id;
 
-      // Then create the order
       const orderData = {
         customerId,
         items: cart.map(item => ({
@@ -73,7 +67,6 @@ const Cart: React.FC = () => {
         }
       );
       
-      console.log('Order response:', orderResponse.data);
       message.success('Order placed successfully!');
       clearCart();
       setIsModalOpen(false);
@@ -81,13 +74,28 @@ const Cart: React.FC = () => {
     } catch (error: any) {
       console.error('Checkout error:', error);
       if (error.response) {
-        console.error('Error response:', error.response.data);
         message.error(error.response.data.message || 'Failed to place order. Please try again.');
       } else {
         message.error('Failed to place order. Please try again.');
       }
     } finally {
       setLoading(false);
+    }
+  }
+
+  const handleIncreaseQuantity = (id: string, currentQuantity: number, stock: number) => {
+    if (currentQuantity < stock) {
+      updateQuantity(id, currentQuantity + 1);
+    } else {
+      message.warning('Cannot exceed available stock');
+    }
+  };
+
+  const handleDecreaseQuantity = (id: string, currentQuantity: number) => {
+    if (currentQuantity > 1) {
+      updateQuantity(id, currentQuantity - 1);
+    } else {
+      removeFromCart(id);
     }
   };
 
@@ -96,26 +104,41 @@ const Cart: React.FC = () => {
       title: 'Product',
       dataIndex: 'name',
       key: 'name',
-      width: '40%',
+      width: '35%',
     },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
-      width: '20%',
+      width: '15%',
       render: (price: number) => `$${price}`,
     },
     {
       title: 'Quantity',
       dataIndex: 'quantity',
       key: 'quantity',
-      width: '20%',
+      width: '25%',
+      render: (quantity: number, record: any) => (
+        <div className="flex items-center space-x-2">
+          <Button
+            icon={<MinusOutlined />}
+            onClick={() => handleDecreaseQuantity(record.id, quantity)}
+            className="flex items-center justify-center"
+          />
+          <span className="w-8 text-center">{quantity}</span>
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => handleIncreaseQuantity(record.id, quantity, record.stock)}
+            className="flex items-center justify-center"
+          />
+        </div>
+      ),
     },
     {
       title: 'Subtotal',
       key: 'subtotal',
-      width: '20%',
-      render: (record: any) => `$${(record.price * record.quantity)}`,
+      width: '15%',
+      render: (record: any) => `$${(record.price * record.quantity).toFixed(2)}`,
     },
     {
       title: 'Action',
@@ -156,7 +179,7 @@ const Cart: React.FC = () => {
               <ShoppingCartOutlined className="text-6xl text-gray-400 mb-4" />
               <p className="text-xl text-gray-500">Your cart is empty</p>
               <Link href="/">
-                <Button type="primary" className="mt-4">
+                <Button type="primary" className="mt-4 bg-indigo-600 hover:bg-indigo-700">
                   Start Shopping
                 </Button>
               </Link>
@@ -173,13 +196,13 @@ const Cart: React.FC = () => {
               <div className="border-t border-gray-200 pt-6">
                 <div className="flex justify-between items-center">
                   <div className="text-xl font-bold text-gray-900">
-                    Total: ${total}
+                    Total: ${total.toFixed(2)}
                   </div>
                   <Button
                     type="primary"
                     size="large"
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-indigo-600 hover:bg-indigo-700"
                   >
                     Proceed to Checkout
                   </Button>
@@ -207,31 +230,23 @@ const Cart: React.FC = () => {
           className="mt-4"
         >
           <div className="grid grid-cols-2 gap-4">
-            {/* <Form.Item
-              name="Name"
-              label="Name"
-              rules={[{ required: true, message: 'Please enter your name' }]}
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[
+                { required: true, message: 'Please enter your email' },
+                { type: 'email', message: 'Please enter a valid email' }
+              ]}
             >
               <Input />
-            </Form.Item> */}
-                    <Form.Item
-            name="email"
-            label="Email"
-            rules={[
-              { required: true, message: 'Please enter your email' },
-              { type: 'email', message: 'Please enter a valid email' }
-            ]}
-          >
-            <Input />
-          </Form.Item>
-             <Form.Item
-            name="phone"
-            label="Phone"
-            rules={[{ required: true, message: 'Please enter your phone number' }]}
-          >
-            <Input />
-            
-          </Form.Item>
+            </Form.Item>
+            <Form.Item
+              name="phone"
+              label="Phone"
+              rules={[{ required: true, message: 'Please enter your phone number' }]}
+            >
+              <Input />
+            </Form.Item>
           </div>
           <Form.Item
             name="address"
@@ -277,17 +292,17 @@ const Cart: React.FC = () => {
             </Form.Item>
           </div>
 
-          <Form.Item className="mt-6">
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              loading={loading} 
-              block
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+          <div className="flex justify-end space-x-4 mt-6">
+            <Button onClick={() => {
+              setIsModalOpen(false);
+              form.resetFields();
+            }}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading} className="bg-indigo-600 hover:bg-indigo-700">
               Place Order
             </Button>
-          </Form.Item>
+          </div>
         </Form>
       </Modal>
     </div>
