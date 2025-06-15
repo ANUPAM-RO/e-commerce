@@ -2,12 +2,20 @@ __turbopack_load_page_chunks__("/orders", [
   "static/chunks/node_modules_next_2a837943._.js",
   "static/chunks/node_modules_react-dom_82bb97c6._.js",
   "static/chunks/node_modules_axios_lib_9aa2336a._.js",
-  "static/chunks/node_modules_antd_es_a1192e79._.js",
+  "static/chunks/node_modules_antd_es_table_d621e155._.js",
+  "static/chunks/node_modules_antd_es_d5109748._.js",
   "static/chunks/node_modules_@ant-design_cssinjs_es_3cbe66e3._.js",
+  "static/chunks/node_modules_rc-table_es_8d0aef90._.js",
+  "static/chunks/node_modules_rc-tree_es_1a63c3de._.js",
+  "static/chunks/node_modules_rc-field-form_es_5f3ede8b._.js",
+  "static/chunks/node_modules_rc-menu_es_837e82b4._.js",
+  "static/chunks/node_modules_rc-select_es_4f62076c._.js",
   "static/chunks/node_modules_react-icons_fa_index_mjs_bad01e3f._.js",
   "static/chunks/node_modules_react-icons_lib_75a63dfe._.js",
-  "static/chunks/node_modules_ed0a53a0._.js",
+  "static/chunks/7c130_@ant-design_7f729c90._.js",
+  "static/chunks/node_modules_@rc-component_770f1a3b._.js",
+  "static/chunks/node_modules_ebec1371._.js",
   "static/chunks/[root-of-the-server]__9f7bd4ba._.js",
   "static/chunks/src_pages_orders_5771e187._.js",
-  "static/chunks/src_pages_orders_df50cb42._.js"
+  "static/chunks/src_pages_orders_a59cf8ef._.js"
 ])

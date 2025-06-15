@@ -51,32 +51,29 @@ const AuthContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externa
 const AuthProvider = ({ children })=>{
     const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [isAuthenticated, setIsAuthenticated] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
-    // Set up axios interceptor for token handling
+    const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(true);
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
-        const interceptor = __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].interceptors.request.use((config)=>{
+        const checkAuth = async ()=>{
             const token = localStorage.getItem('token');
             if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
+                try {
+                    const response = await __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].get(`${("TURBOPACK compile-time value", "http://localhost:3001/api")}/auth/me`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setUser(response.data);
+                    setIsAuthenticated(true);
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                    localStorage.removeItem('token');
+                    setUser(null);
+                    setIsAuthenticated(false);
+                }
             }
-            return config;
-        }, (error)=>{
-            return Promise.reject(error);
-        });
-        // Clean up interceptor on unmount
-        return ()=>{
-            __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].interceptors.request.eject(interceptor);
+            setIsLoading(false);
         };
-    }, []);
-    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
-        // Check for stored user data on mount
-        const storedUser = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
-        if (storedUser && token) {
-            setUser(JSON.parse(storedUser));
-            setIsAuthenticated(true);
-            // Set default authorization header
-            __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
+        checkAuth();
     }, []);
     const login = async (email, password)=>{
         try {
@@ -84,53 +81,65 @@ const AuthProvider = ({ children })=>{
                 email,
                 password
             });
-            const { access_token, user: userData } = response.data;
-            // Save token and user data to localStorage
-            localStorage.setItem('token', access_token);
-            localStorage.setItem('user', JSON.stringify(userData));
-            // Set auth header for future requests
-            __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-            setUser(userData);
+            const { token, user } = response.data;
+            localStorage.setItem('token', token);
+            setUser(user);
             setIsAuthenticated(true);
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].success('Login successful!');
         } catch (error) {
             console.error('Login error:', error);
-            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].error(error.response?.data?.message || 'Login failed. Please try again.');
+            if (error.response) {
+                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].error(error.response.data.message || 'Login failed. Please try again.');
+            } else {
+                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].error('Login failed. Please try again.');
+            }
             throw error;
         }
     };
-    const register = async (email, password, name)=>{
+    const register = async (name, email, password)=>{
         try {
             const response = await __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].post(`${("TURBOPACK compile-time value", "http://localhost:3001/api")}/auth/register`, {
+                name,
                 email,
-                password,
-                name
+                password
             });
-            const { access_token, user: userData } = response.data;
-            // Save token and user data to localStorage
-            localStorage.setItem('token', access_token);
-            localStorage.setItem('user', JSON.stringify(userData));
-            // Set auth header for future requests
-            __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-            setUser(userData);
+            const { token, user } = response.data;
+            localStorage.setItem('token', token);
+            setUser(user);
             setIsAuthenticated(true);
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].success('Registration successful!');
         } catch (error) {
             console.error('Registration error:', error);
-            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].error(error.response?.data?.message || 'Registration failed. Please try again.');
+            if (error.response) {
+                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].error(error.response.data.message || 'Registration failed. Please try again.');
+            } else {
+                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].error('Registration failed. Please try again.');
+            }
             throw error;
         }
     };
     const logout = ()=>{
-        // Clear localStorage
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        // Clear auth header
-        delete __TURBOPACK__imported__module__$5b$externals$5d2f$axios__$5b$external$5d$__$28$axios$2c$__esm_import$29$__["default"].defaults.headers.common['Authorization'];
         setUser(null);
         setIsAuthenticated(false);
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$antd$2f$es$2f$message$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__message$3e$__["message"].success('Logged out successfully!');
     };
+    if (isLoading) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+            className: "min-h-screen flex items-center justify-center",
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                className: "animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"
+            }, void 0, false, {
+                fileName: "[project]/src/context/AuthContext.tsx",
+                lineNumber: 108,
+                columnNumber: 9
+            }, this)
+        }, void 0, false, {
+            fileName: "[project]/src/context/AuthContext.tsx",
+            lineNumber: 107,
+            columnNumber: 7
+        }, this);
+    }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(AuthContext.Provider, {
         value: {
             user,
@@ -142,7 +151,7 @@ const AuthProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/src/context/AuthContext.tsx",
-        lineNumber: 126,
+        lineNumber: 114,
         columnNumber: 5
     }, this);
 };

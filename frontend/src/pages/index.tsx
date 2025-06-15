@@ -27,8 +27,11 @@ export default function Home() {
   const { addItem } = useCart();
   const router = useRouter();
 
+  console.log("isAuthenticated" ,isAuthenticated)
+
   useEffect(() => {
     if (!isAuthenticated) {
+      console.log("hello")
       router.push('/login');
       return;
     }

@@ -8,6 +8,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { ProductsService } from '../products/products.service';
 import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 import { ORDER_PATTERNS } from '../rabbitmq/message-patterns';
+import { Customer } from '../customers/entities/customer.entity';
 
 @Injectable()
 export class OrdersService {
@@ -16,6 +17,8 @@ export class OrdersService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(OrderItem)
     private readonly orderItemRepository: Repository<OrderItem>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
     private readonly productsService: ProductsService,
     private readonly rabbitMQService: RabbitMQService,
   ) {}
@@ -76,6 +79,42 @@ export class OrdersService {
     return this.orderRepository.find({
       relations: ['orderItems', 'orderItems.product'],
     });
+  }
+
+  async findByUserId(userId: string): Promise<Order[]> {
+    // First find the customer associated with the user
+    const customer = await this.customerRepository.findOne({
+      where: { userId },
+      relations: ['user']
+    });
+
+    if (!customer) {
+      return [];
+    }
+
+    // Then find all orders for that customer with customer details
+    const orders = await this.orderRepository.find({
+      where: { customerId: customer.id },
+      relations: ['orderItems', 'orderItems.product'],
+      order: {
+        createdAt: 'DESC'
+      }
+    });
+
+    // Add customer details to each order
+    return orders.map(order => ({
+      ...order,
+      customer: {
+        name: customer.user.name,
+        email: customer.email,
+        phone: customer.phone,
+        address: customer.address,
+        city: customer.city,
+        state: customer.state,
+        zipCode: customer.zipCode,
+        country: customer.country
+      }
+    }));
   }
 
   async findOne(id: string): Promise<Order> {

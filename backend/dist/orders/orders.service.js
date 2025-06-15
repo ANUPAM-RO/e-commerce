@@ -21,10 +21,12 @@ const order_item_entity_1 = require("./entities/order-item.entity");
 const products_service_1 = require("../products/products.service");
 const rabbitmq_service_1 = require("../rabbitmq/rabbitmq.service");
 const message_patterns_1 = require("../rabbitmq/message-patterns");
+const customer_entity_1 = require("../customers/entities/customer.entity");
 let OrdersService = class OrdersService {
-    constructor(orderRepository, orderItemRepository, productsService, rabbitMQService) {
+    constructor(orderRepository, orderItemRepository, customerRepository, productsService, rabbitMQService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
+        this.customerRepository = customerRepository;
         this.productsService = productsService;
         this.rabbitMQService = rabbitMQService;
     }
@@ -67,6 +69,35 @@ let OrdersService = class OrdersService {
             relations: ['orderItems', 'orderItems.product'],
         });
     }
+    async findByUserId(userId) {
+        const customer = await this.customerRepository.findOne({
+            where: { userId },
+            relations: ['user']
+        });
+        if (!customer) {
+            return [];
+        }
+        const orders = await this.orderRepository.find({
+            where: { customerId: customer.id },
+            relations: ['orderItems', 'orderItems.product'],
+            order: {
+                createdAt: 'DESC'
+            }
+        });
+        return orders.map(order => ({
+            ...order,
+            customer: {
+                name: customer.user.name,
+                email: customer.email,
+                phone: customer.phone,
+                address: customer.address,
+                city: customer.city,
+                state: customer.state,
+                zipCode: customer.zipCode,
+                country: customer.country
+            }
+        }));
+    }
     async findOne(id) {
         const order = await this.orderRepository.findOne({
             where: { id },
@@ -105,7 +136,9 @@ exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(order_entity_1.Order)),
     __param(1, (0, typeorm_1.InjectRepository)(order_item_entity_1.OrderItem)),
+    __param(2, (0, typeorm_1.InjectRepository)(customer_entity_1.Customer)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         products_service_1.ProductsService,
         rabbitmq_service_1.RabbitMQService])

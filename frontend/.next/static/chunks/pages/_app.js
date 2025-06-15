@@ -1,5 +1,5 @@
 __turbopack_load_page_chunks__("/_app", [
-  "static/chunks/node_modules_next_d64a42e6._.js",
+  "static/chunks/node_modules_next_8bb7e4ea._.js",
   "static/chunks/node_modules_react-dom_82bb97c6._.js",
   "static/chunks/node_modules_axios_lib_9aa2336a._.js",
   "static/chunks/node_modules_antd_es_a1192e79._.js",
@@ -10,5 +10,5 @@ __turbopack_load_page_chunks__("/_app", [
   "static/chunks/[root-of-the-server]__5055f1c0._.js",
   "static/chunks/src_styles_globals_4738091e.css",
   "static/chunks/src_pages__app_5771e187._.js",
-  "static/chunks/src_pages__app_4ab8d5b8._.js"
+  "static/chunks/src_pages__app_62c4ca6a._.js"
 ])

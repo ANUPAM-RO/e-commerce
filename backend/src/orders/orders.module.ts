@@ -6,10 +6,11 @@ import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { ProductsModule } from '../products/products.module';
 import { RabbitMQModule } from '../rabbitmq/rabbitmq.module';
+import { Customer } from '../customers/entities/customer.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order, OrderItem]),
+    TypeOrmModule.forFeature([Order, OrderItem, Customer]),
     ProductsModule,
     RabbitMQModule,
   ],

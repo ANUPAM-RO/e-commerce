@@ -17,6 +17,11 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
+  @Get('user/:userId')
+  findByUserId(@Param('userId', ParseUUIDPipe) userId: string) {
+    return this.ordersService.findByUserId(userId);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.ordersService.findOne(id);
