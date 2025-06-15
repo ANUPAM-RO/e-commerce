@@ -25,7 +25,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      register(formData?.email,formData?.password, formData?.name )
+      register(formData?.name  ,formData?.email, formData?.password, )
       router.push('/login');
     } catch (error) {
       setError('Registration failed. Please try again.');
